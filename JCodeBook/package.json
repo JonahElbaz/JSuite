@@ -38,7 +38,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "PORT=8889 concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
+    "dev": "PORT=8891 concurrently -k \"BROWSER=none npm start\" \"npm:electron\"",
     "electron": "wait-on tcp:8889 && electron .",
     "package": "npx electron-packager . --overwrite"
   },

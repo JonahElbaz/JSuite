@@ -11,7 +11,7 @@ const format = 'YYYY-MM-DD';
 const hourFormat = 'HH:mm';
 const titleSplit = ' [';
 
-async function produceReport({dateRange, days, startingDate, endDate, uid, reportType, hideMail}) {
+async function produceReport({dateRange, days, startingDate, endDate, uid, reportType, hideMail, bookIdFilter = []}) {
   const user = await admin.firestore().collection('users').doc(uid).get();
   const data = user.data();
   const content = data.content;
@@ -29,12 +29,20 @@ async function produceReport({dateRange, days, startingDate, endDate, uid, repor
   const booksCalculated = [];
   let listOfWages = [];
 
+  if (bookIdFilter && bookIdFilter.length > 0) {
+    for (const bID in content.notebooks) {
+      if (bookIdFilter.indexOf(bID) === -1) {
+        delete content.notebooks[bID];
+      }
+    }
+  }
+
   for (const bookId in content.notebooks) {
     const title = content.notebooks[bookId].title;
     const entries = content.notebooks[bookId].entries;
     if (!entries || entries.length === 0) {
       console.log('No entries in notebook: ' + title);
-      return;
+      continue;
     }
     let bookData = {
       dateRange: '',
@@ -70,6 +78,11 @@ async function produceReport({dateRange, days, startingDate, endDate, uid, repor
         return false;
       }
     });
+
+    if (filteredEntries.length === 0) {
+      continue;
+    }
+
     let smallestDate = '';
     let largestDate = '';
     const arrayOfStartTimes = [];

@@ -32,10 +32,13 @@ const Notebook = ({}) => {
   };
   const notebooks = data?.content?.notebooks || {}
   const {nbid} = useParams()
+  const history = useHistory()
   const nb = notebooks[nbid]
+  if (!nb){
+    history.goBack()
+  }
   const entries = nb.entries || [];
   const queryClient = useQueryClient()
-  const history = useHistory()
   const [visibleWeeks, setVisibleWeeks] = useState([])
   const [allEntries, setAllEntries] = useState([])
   const [renderedGroups, setRenderedGroups] = useState({})

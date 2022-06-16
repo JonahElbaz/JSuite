@@ -1,6 +1,6 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {config} from "../../config";
-import {Button, FlexBox} from "../../styles";
+import {Button, EntryContainer, FlexBox} from "../../styles";
 import {ArrowBack} from "react-ionicons";
 import Title from "../../components/Title.js";
 import {useHistory} from "react-router-dom";
@@ -16,6 +16,7 @@ import 'firebase/functions'
 import {useToasts} from "react-toast-notifications";
 import CenterLoader from "../../components/CenterLoader.js";
 import ReportTemplate from "./reportTemplate.js";
+import {useUserData} from "../../store/hooks/user.hook.js";
 
 const Reports = ({}) => {
   const {addToast} = useToasts()
@@ -36,6 +37,16 @@ const Reports = ({}) => {
   const history = useHistory()
   const [reportResponse, setReportResponse] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [bookId, setBookId] = useState(1)
+
+  const {data: {data}, isFetching} = useUserData()
+  const notebooks = data?.content?.notebooks || {}
+
+  useEffect(() => {
+    if (data && notebooks) {
+      setBookId(Object.keys(notebooks)[0])
+    }
+  }, [data])
 
   const resetReports = () => {
     setReportParams({
@@ -99,7 +110,8 @@ const Reports = ({}) => {
       dateRange: [
         moment(reportParams.dateRange.startDate.toISOString()).format(config.dates.format),
         moment(reportParams.dateRange.endDate.toISOString()).format(config.dates.format)
-      ]
+      ],
+      bookIdFilter: [bookId]
     }
 
     setLoading(true)
@@ -157,7 +169,19 @@ const Reports = ({}) => {
 
 
       {loading ? <CenterLoader/> : !reportResponse ? <div style={{padding: spacing}}>
+
         <FlexBox justify={'space-between'}>
+          <div>Notebook</div>
+
+          <select id="optionSelect" value={bookId}
+                  style={{width: 200}} onChange={ev => setBookId(ev.target.value)}>
+            {(Object.keys(notebooks || {})).map(id =>
+              <option value={id}>{notebooks[id].title}</option>)}
+          </select>
+
+        </FlexBox>
+
+        <FlexBox justify={'space-between'}  style={{marginTop: 30}}>
           <div>Date Range</div>
           <div style={{opacity: 0.7, cursor: 'pointer'}} onClick={() => setShowDateRange(true)}>
             {reportParams.dateRange.isSet ? `${moment(reportParams.dateRange.startDate.toISOString()).format(config.dates.format)} - ${moment(reportParams.dateRange.endDate.toISOString()).format(config.dates.format)}` : 'Pick Date Range'}

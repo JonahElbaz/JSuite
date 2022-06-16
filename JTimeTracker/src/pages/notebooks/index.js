@@ -123,13 +123,13 @@ const Notebooks = ({}) => {
       </FlexBox>
       <h3 style={{paddingLeft: 12, marginTop: 20, marginBottom: 6}}>
         Notebooks
-        {/*<AddCircle*/}
-        {/*  color={config.colors.primary}*/}
-        {/*  height="20px"*/}
-        {/*  width="20px"*/}
-        {/*  style={{cursor: 'pointer', position: 'relative', top: 3, left: 6}}*/}
-        {/*  onClick={() => setAddNotebook('')}*/}
-        {/*/>*/}
+        <AddCircle
+          color={config.colors.primary}
+          height="20px"
+          width="20px"
+          style={{cursor: 'pointer', position: 'relative', top: 3, left: 6}}
+          onClick={() => setAddNotebook('')}
+        />
       </h3>
 
       {addNotebook !== null && <FlexBox style={{marginBottom: 20}}>

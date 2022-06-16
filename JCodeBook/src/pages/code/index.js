@@ -46,31 +46,42 @@ const List = ({}) => {
 			if (filters.search.length) {
 				filteredData = [...filteredData].filter(o => o.title.toLowerCase().includes(filters.search.toLowerCase()))
 
-				filterLang([...blocks]).forEach((entry, i) => {
-					entry.segments.forEach((segment, j) => {
-						const foundIndex = segment.code.toLowerCase().indexOf(filters.search.toLowerCase())
-						if (foundIndex > -1) {
-							const start = foundIndex - 10 < 0 ? 0 : foundIndex - 5
-							const end = foundIndex + 50 > segment.code.length - 1 ? segment.code.length - 1 : foundIndex + 50
-							const rez = {
-								filename: segment.fileName,
-								line: segment.code.substr(start, end - start)
-							}
-							const existingI = filteredData.findIndex(o => o.id === entry.id)
-							if (existingI === -1) {
-								const newEntry = { ...entry }
-								newEntry.segmentResults = [rez]
-								filteredData.push(newEntry)
-							} else {
-								filteredData[existingI].segmentResults = filteredData[existingI].segmentResults || []
-								filteredData[existingI].segmentResults.push(rez)
-							}
-						}
+				filterLang([...blocks])
+					.map(o => {
+						o.segmentResults = []
+						return o
 					})
-				})
-			}
-			if (JSON.stringify(results) !== JSON.stringify(filteredData)) {
-				setResults(filteredData)
+					.forEach((entry, i) => {
+						entry.segments.forEach((segment, j) => {
+							const foundIndex = segment.code.toLowerCase().indexOf(filters.search.toLowerCase())
+							if (foundIndex > -1) {
+								const start = foundIndex - 10 < 0 ? 0 : foundIndex - 5
+								const end = foundIndex + 50 > segment.code.length - 1 ? segment.code.length - 1 : foundIndex + 50
+								const rez = {
+									filename: segment.fileName,
+									line: segment.code.substr(start, end - start)
+								}
+								const existingI = filteredData.findIndex(o => o.id === entry.id)
+								if (existingI === -1) {
+									const newEntry = { ...entry }
+									newEntry.segmentResults = [rez]
+									filteredData.push(newEntry)
+								} else {
+									filteredData[existingI].segmentResults.push(rez)
+								}
+							}
+						})
+					})
+				if (JSON.stringify(results) !== JSON.stringify(filteredData)) {
+					setResults(filteredData)
+				}
+			} else {
+				if (JSON.stringify(results) !== JSON.stringify(filteredData)) {
+					setResults(filteredData.map(o => {
+						o.segmentResults = []
+						return o
+					}))
+				}
 			}
 		} catch (e) {
 			alert("There was an error running a search")

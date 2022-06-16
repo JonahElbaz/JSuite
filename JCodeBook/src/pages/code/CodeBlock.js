@@ -122,9 +122,9 @@ const CodeBlock = (props) => {
 		})
 	}
 
-	const updateSegmentTitle = (e, i) => {
+	const updateSegmentField = (e, i, field) => {
 		const blocks = [...block.segments]
-		blocks[i].fileName = e.target.value;
+		blocks[i][field] = e.target.value;
 		setBlock({
 			...block,
 			segments: blocks
@@ -159,8 +159,8 @@ const CodeBlock = (props) => {
 								<div onClick={() => toggleSegment(i)} className={"minus"}>
 									{!min ? <ChevronDown color={'#fff'} style={{top: 2, left: 1, position: 'relative'}} /> : <ChevronForward color={'#fff'} style={{top: 2, left: 1, position: 'relative'}} />}
 								</div>
-								<input style={{flex: 1}} onChange={e => updateSegmentTitle(e, i)} value={segment.fileName} placeholder={"filename"}/>
-								{!min && <select>
+								<input style={{flex: 1}} onChange={e => updateSegmentField(e, i, 'fileName')} value={segment.fileName} placeholder={"filename"}/>
+								{!min && <select onChange={e => updateSegmentField(e, i, 'language')}>
 									{config.languages.map(o => <option value={o.value}>{o.short || o.display}</option>)}
 								</select>}
 								{min && <div onClick={() => deleteSegment(i)} className={'delete-seg'}>DELETE</div>}
